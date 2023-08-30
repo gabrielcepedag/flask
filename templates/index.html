@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Conexión con API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f8f8;
+        }
+        #api-results {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        .result {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f8f8f8;
+        }
+        #message {
+            margin-top: 30px;
+            padding: 10px;
+            background-color: #ffcccc;
+            border: 1px solid #ff9999;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        #deposit-section {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        #deposit-section h2 {
+            margin-bottom: 10px;
+        }
+        
+        #deposit-section label,
+        #deposit-section input,
+        #deposit-section button {
+            display: block;
+            margin: 10px auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Resultados de la API:</h1>
+    <div id="api-results">
+        <div id="terminalCodigo"> Codigo Terminal:  </div>
+        <div id="pagos"> SALDO PAGOS:  </div>
+        <div id="ventas"> SALDO DEPOSITADO:  </div>
+        <div id="comision"> COMISION:  </div>
+        <div id="message"> MESSAGE FROM LOTENET: </div>
+    </div>
+
+    <div id="deposit-section">
+        <h2>Depositar</h2>
+        <label for="terminal-code">Código Terminal:</label>
+        <input type="text" id="terminal-code" placeholder="Código Terminal" required>
+        
+        <label for="amount">Monto:</label>
+        <input type="number" id="amount" placeholder="Monto" required>
+        
+        <button id="deposit-button">Depositar</button>
+    </div>
+</body>
+<!-- <script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const apiResults = document.getElementById("api-results");
+
+    // Realizar la solicitud GET a la API
+    const apiUrl = `http://localhost:5000/consulta-agente?idTerminal=${code}`;
+    fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+            // resultado = JSON.stringify(data)
+
+            message.innerHTML += data;
+            pagos.innerHTML += '$'+data['datos']['saldos']['pagos'];
+            ventas.innerHTML += '$'+data['datos']['saldos']['ventas'];
+            terminalCodigo.innerHTML += data['datos']['terminal']['codigo'];
+            message.innerHTML += JSON.stringify(data, null, 2);
+        })
+        .catch(error => {
+            console.error("Error de Gabriel:", error);
+            message = `Error de Gabriel: ${error}`
+            message.innerHTML += message;
+        });
+});
+</script> -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        
+        const depositButton = document.getElementById("deposit-button");
+        const terminalCodeInput = document.getElementById("terminal-code");
+        const amountInput = document.getElementById("amount");
+        const comision = document.getElementById("comision");
+        
+        depositButton.addEventListener("click", function() {
+            const code = terminalCodeInput.value;
+            const amount = amountInput.value;
+            
+            if (code && amount) {
+                depositButton.disabled = true;
+                const apiUrl = `https://api-panama.infinitetech.me/deposito?idTerminal=${code}&monto=${amount}`;
+                
+                fetch(apiUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data);
+
+                        pagos.innerHTML =  'SALDO PAGOS: '+('$'+data['datos']['saldo_actual']) || 'ERROR';
+                        ventas.innerHTML = 'SALDO DEPOSITADO: '+('$'+data['datos']['saldo_depositado']) || 'ERROR';
+                        comision.innerHTML = 'COMISION: '+('$'+data['datos']['comision'])
+                        terminalCodigo.innerHTML = 'Codigo Terminal: '+ data['datos']['codigo'] || 'ERROR';
+                        message.innerHTML = 'MESSAGE FROM LOTENET: '+JSON.stringify(data, null, 2);
+                        
+                        amountInput.value = "";
+                    })
+                    .catch(error => {
+                        message = `Error de Gabriel: ${error}`
+                        message.innerHTML += message;
+                        console.error("Error:", error);
+                    }).finally(() => {
+                        depositButton.disabled = false;
+                    });
+            }
+        });
+    });
+</script>
+</html>
