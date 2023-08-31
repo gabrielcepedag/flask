@@ -7,8 +7,8 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
-# CORS(app, resources={r"/*": {"origins": "https://api-panama.infinitetech.me/"}})
-CORS(app, resources={r"/*": {"origins": "http://localhost:6789.com"}})
+CORS(app, resources={r"/*": {"origins": "https://api-panama.infinitetech.me/"}})
+# CORS(app, resources={r"/*": {"origins": "http://localhost:6789.com"}})
 
 URL = 'http://dev-admin.orkapi.net:6815/api/servicio/'
 TOKEN = None
@@ -111,5 +111,5 @@ def index():
 
 
 if __name__ == '__main__':
-    # app.run(host='0.0.0.0', port=5000, debug=True)
-    app.run(host='0.0.0.0', port=6789, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
+    # app.run(host='0.0.0.0', port=6789, debug=True)
