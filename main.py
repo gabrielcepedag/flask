@@ -7,18 +7,11 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
-CORS(app, resources={r"/*": {"origins": "https://api-panama.infinitetech.me/"}})
+# CORS(app, resources={r"/*": {"origins": "https://api-panama.infinitetech.me/"}})
+CORS(app, resources={r"/*": {"origins": "http://localhost:6789.com"}})
 
 URL = 'http://dev-admin.orkapi.net:6815/api/servicio/'
 TOKEN = None
-
-@app.route('/consulta-agente', methods=['GET'])
-def home():
-    terminalId = request.args.get('idTerminal')
-    message = consultar_agente_prepago(terminalId=terminalId)
-
-    return jsonify(message), 200
-
 
 @app.route('/deposito', methods=['GET'])
 def deposito():
@@ -26,7 +19,7 @@ def deposito():
     monto = request.args.get('monto')
     consulta = consultar_agente_prepago(terminalId)
     
-    if (consulta['transaccion']):
+    if (consulta.get('transaccion')):
         headers = {
             "Authorization": f"Bearer {TOKEN}"
         }
@@ -42,16 +35,24 @@ def deposito():
         login(terminalId)
         response = requests.post(URL+string, json=data, headers=headers)
 
+        respuesta = json.loads(response.content)
         if (response.status_code == 200):
             print(response.content)
-            respuesta = json.loads(response.content)
-            
-            return jsonify(respuesta), 200
+            return jsonify(respuesta)
         else:
-            message = f'Error al hacer deposito: {response.content}'
-            return {"message" : message}
+            print("Error de API")
+            return respuesta
     else:
-        return {"message" : consulta}
+        print('No existe transaccion en consultar agente prepago')
+        return consulta
+    
+
+@app.route('/consulta-agente', methods=['GET'])
+def home():
+    terminalId = request.args.get('idTerminal')
+    message = consultar_agente_prepago(terminalId=terminalId)
+
+    return jsonify(message)
 
 
 def consultar_agente_prepago(terminalId):
@@ -65,13 +66,13 @@ def consultar_agente_prepago(terminalId):
     consulta = f'terminales/{terminalId}/consultar?tag={terminalId}&referencia_externa={uuid}'
 
     response = requests.get(URL+consulta, headers=headers)
+    respuesta = json.loads(response.content)
     if (response.status_code == 200):
-        respuesta = json.loads(response.content)
-        # print(respuesta)
+        print(respuesta)
         return respuesta
     else:
-        print(response.content)
-        return {"message" : "Error al consultar agente prepago"}
+        print("Error de API")
+        return respuesta
 
 def login(terminalId):
     global TOKEN
@@ -87,14 +88,14 @@ def login(terminalId):
     if (TOKEN == None):
         print('Entre a buscar token')
         response = requests.post(URL+'sessions', json=data)
+        respuesta = json.loads(response.content)
         if (response.status_code == 200):
-            respuesta = json.loads(response.content)
             TOKEN = respuesta['data']['jwt_token']
             # print(respuesta)
             return {'token' : respuesta['data']['jwt_token']}
         else:
-            print(response.content)
-            return {"message" : "Error al hacer login"}
+            print("Error de API")
+            return respuesta
     else:
         print('Ya tengo token')
         return {'token' : TOKEN}
@@ -110,4 +111,5 @@ def index():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    # app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=6789, debug=True)

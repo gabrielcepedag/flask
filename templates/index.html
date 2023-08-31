@@ -112,25 +112,29 @@
             
             if (code && amount) {
                 depositButton.disabled = true;
-                const apiUrl = `https://api-panama.infinitetech.me/deposito?idTerminal=${code}&monto=${amount}`;
+                // const apiUrl = `https://api-panama.infinitetech.me/deposito?idTerminal=${code}&monto=${amount}`;
+                const apiUrl = `http://localhost:6789/deposito?idTerminal=${code}&monto=${amount}`;
                 
                 fetch(apiUrl)
                     .then(response => response.json())
                     .then(data => {
                         console.log(data);
-
-                        pagos.innerHTML =  'SALDO PAGOS: '+('$'+data['datos']['saldo_actual']) || 'ERROR';
-                        ventas.innerHTML = 'SALDO DEPOSITADO: '+('$'+data['datos']['saldo_depositado']) || 'ERROR';
-                        comision.innerHTML = 'COMISION: '+('$'+data['datos']['comision'])
-                        terminalCodigo.innerHTML = 'Codigo Terminal: '+ data['datos']['codigo'] || 'ERROR';
                         message.innerHTML = 'MESSAGE FROM LOTENET: '+JSON.stringify(data, null, 2);
+                        try{
+                            pagos.innerHTML =  'SALDO PAGOS: '+('$'+data['datos']['saldo_actual'] || 'ERROR');
+                            ventas.innerHTML = 'SALDO DEPOSITADO: '+('$'+data['datos']['saldo_depositado'] || 'ERROR');
+                            comision.innerHTML = 'COMISION: '+('$'+data['datos']['comision'] || 'ERROR');
+                            terminalCodigo.innerHTML = 'Codigo Terminal: '+(data['datos']['codigo'] || 'ERROR');
+                        }catch(e){
+                            console.error('Error JS: ',e);
+                        }
                         
                         amountInput.value = "";
                     })
                     .catch(error => {
                         message = `Error de Gabriel: ${error}`
-                        message.innerHTML += message;
-                        console.error("Error:", error);
+                        message.innerHTML = 'MESSAGE FROM LOTENET: '+error;
+                        console.error('Error FETCH: ',e);
                     }).finally(() => {
                         depositButton.disabled = false;
                     });
