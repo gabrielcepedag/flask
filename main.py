@@ -3,7 +3,6 @@ import requests
 import uuid
 import json
 from flask_cors import CORS
-import jwt
 from datetime import datetime
 
 
@@ -118,26 +117,6 @@ def generar_uuid():
 @app.route('/')
 def index():
     return render_template('index.html')
-
-
-def validar_token():
-    global TOKEN
-    print('TOKEN: ')
-    try:
-        payload = jwt.decode(TOKEN, verify=False)
-    
-        expiracion = payload['exp']
-        now = datetime.utcnow()
-        print(payload)
-        print(expiracion)
-        if expiracion > now:
-            return True
-    except jwt.ExpiredSignatureError:
-        print('TOKEN ESTA EXPIRADO')
-        return False
-    except jwt.DecodeError:
-        print('TOKEN NO ES VALIDO')
-        return False
 
 
 if __name__ == '__main__':
