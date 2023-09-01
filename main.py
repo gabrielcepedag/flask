@@ -13,7 +13,7 @@ CORS(app, resources={r"/*": {"origins": "https://api-panama.infinitetech.me/"}})
 # CORS(app, resources={r"/*": {"origins": "http://localhost:6789.com"}})
 
 URL = 'http://dev-admin.orkapi.net:6815/api/servicio/'
-TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo1LCJleHAiOjE2OTM1NzY2MDAsImlvdCI6MTY5MzQ5MDIwMH0.axIjJw35R3fU7V7Vd_IryH06MhJZygYf-I0V5cBQf2g'
+TOKEN = None
 
 @app.route('/deposito', methods=['GET'])
 def deposito():
@@ -42,8 +42,10 @@ def deposito():
         if (response.status_code == 200):
             print(response.content)
             return jsonify(respuesta)
+        elif (response.content.get('error') == 'Necesita iniciar sesión.'):
+            login(terminalId)
         else:
-            print("Error de API")
+            print("Error de API: "+str(respuesta))
             return respuesta
     else:
         print('No existe transaccion en consultar agente prepago')
@@ -59,6 +61,7 @@ def home():
 
 
 def consultar_agente_prepago(terminalId):
+
     login(terminalId=terminalId)
     global TOKEN
     
@@ -75,8 +78,9 @@ def consultar_agente_prepago(terminalId):
         print(respuesta)
         return respuesta
     else:
-        print("Error de API")
+        print("Error de API EN consultar_agente_prepago: "+str(respuesta))
         return respuesta
+    
 
 def login(terminalId):
     global TOKEN
@@ -89,20 +93,20 @@ def login(terminalId):
             "password" : password
         }
     }
-    print('TOKEN: '+TOKEN)
-    if (TOKEN == None or validar_token(TOKEN) == False):
+
+    if (TOKEN == None):
         print('Entre a buscar token')
         response = requests.post(URL+'sessions', json=data)
         respuesta = json.loads(response.content)
         if (response.status_code == 200):
             TOKEN = respuesta['data']['jwt_token']
             # print(respuesta)
+            print('Devolviendo TOKEN')
             return {'token' : respuesta['data']['jwt_token']}
         else:
-            print("Error de API")
+            print("Error de API en login: "+str(respuesta))
             return respuesta
     else:
-        
         print('Ya tengo token')
         return {'token' : TOKEN}
 
@@ -116,18 +120,23 @@ def index():
     return render_template('index.html')
 
 
-def validar_token(token):
+def validar_token():
+    global TOKEN
+    print('TOKEN: ')
     try:
-        payload = jwt.decode(token, verify=False)
+        payload = jwt.decode(TOKEN, verify=False)
     
         expiracion = payload['exp']
         now = datetime.utcnow()
-
+        print(payload)
+        print(expiracion)
         if expiracion > now:
             return True
     except jwt.ExpiredSignatureError:
+        print('TOKEN ESTA EXPIRADO')
         return False
     except jwt.DecodeError:
+        print('TOKEN NO ES VALIDO')
         return False
 
 
