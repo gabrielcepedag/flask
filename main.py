@@ -8,8 +8,8 @@ from datetime import datetime
 
 app = Flask(__name__)
 CORS(app)
-# CORS(app, resources={r"/*": {"origins": "https://api-panama.infinitetech.me/"}})
-CORS(app, resources={r"/*": {"origins": "http://localhost:6789.com"}})
+CORS(app, resources={r"/*": {"origins": "https://api-panama.infinitetech.me/"}})
+# CORS(app, resources={r"/*": {"origins": "http://localhost:6789.com"}})
 
 URL = 'http://dev-admin.orkapi.net:6815/api/servicio/'
 TOKEN = None
@@ -42,7 +42,7 @@ def deposito():
             TOKEN = None
             login(terminalId)
             deposito()
-        if (response.status_code == 200):
+        elif (response.status_code == 200):
             print(response.content)
             return jsonify(respuesta)
 
@@ -127,5 +127,5 @@ def index():
 
 
 if __name__ == '__main__':
-    # app.run(host='0.0.0.0', port=5000, debug=True)
-    app.run(host='0.0.0.0', port=6789, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
+    # app.run(host='0.0.0.0', port=6789, debug=True)

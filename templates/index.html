@@ -112,8 +112,8 @@
             
             if (code && amount) {
                 depositButton.disabled = true;
-                // const apiUrl = `https://api-panama.infinitetech.me/deposito?idTerminal=${code}&monto=${amount}`;
-                const apiUrl = `http://localhost:6789/deposito?idTerminal=${code}&monto=${amount}`;
+                const apiUrl = `https://api-panama.infinitetech.me/deposito?idTerminal=${code}&monto=${amount}`;
+                // const apiUrl = `http://localhost:6789/deposito?idTerminal=${code}&monto=${amount}`;
                 
                 fetch(apiUrl)
                     .then(response => response.json())
