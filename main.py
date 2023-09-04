@@ -38,12 +38,14 @@ def deposito():
         response = requests.post(URL+string, json=data, headers=headers)
 
         respuesta = json.loads(response.content)
+        if (respuesta.get('error') == 'Necesita iniciar sesión.'):
+            TOKEN = None
+            login(terminalId)
+            deposito()
         if (response.status_code == 200):
             print(response.content)
             return jsonify(respuesta)
-        elif (respuesta.get('error') == 'Necesita iniciar sesión.'):
-            login(terminalId)
-            deposito()
+
         else:
             print("Error de API: "+str(respuesta))
             return respuesta
@@ -74,6 +76,7 @@ def consultar_agente_prepago(terminalId):
     response = requests.get(URL+consulta, headers=headers)
     respuesta = json.loads(response.content)
     if (respuesta.get('error') == 'Necesita iniciar sesión.'):
+        TOKEN= None
         login(terminalId)
         consultar_agente_prepago(terminalId)
 
