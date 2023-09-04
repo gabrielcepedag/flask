@@ -72,11 +72,10 @@ def consultar_agente_prepago(terminalId):
     consulta = f'terminales/{terminalId}/consultar?tag={terminalId}&referencia_externa={uuid}'
 
     response = requests.get(URL+consulta, headers=headers)
-    if (response.content.get('error') == 'Necesita iniciar sesión.'):
+    respuesta = json.loads(response.content)
+    if (respuesta.content.get('error') == 'Necesita iniciar sesión.'):
         login(terminalId)
         consultar_agente_prepago(terminalId)
-    respuesta = json.loads(response.content)
-    
 
     if (response.status_code == 200):
         print(respuesta)
