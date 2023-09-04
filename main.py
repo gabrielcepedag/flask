@@ -8,8 +8,8 @@ from datetime import datetime
 
 app = Flask(__name__)
 CORS(app)
-CORS(app, resources={r"/*": {"origins": "https://api-panama.infinitetech.me/"}})
-# CORS(app, resources={r"/*": {"origins": "http://localhost:6789.com"}})
+# CORS(app, resources={r"/*": {"origins": "https://api-panama.infinitetech.me/"}})
+CORS(app, resources={r"/*": {"origins": "http://localhost:6789.com"}})
 
 URL = 'http://dev-admin.orkapi.net:6815/api/servicio/'
 TOKEN = None
@@ -41,7 +41,7 @@ def deposito():
         if (response.status_code == 200):
             print(response.content)
             return jsonify(respuesta)
-        elif (response.content.get('error') == 'Necesita iniciar sesión.'):
+        elif (respuesta.get('error') == 'Necesita iniciar sesión.'):
             login(terminalId)
             deposito()
         else:
@@ -73,7 +73,7 @@ def consultar_agente_prepago(terminalId):
 
     response = requests.get(URL+consulta, headers=headers)
     respuesta = json.loads(response.content)
-    if (respuesta.content.get('error') == 'Necesita iniciar sesión.'):
+    if (respuesta.get('error') == 'Necesita iniciar sesión.'):
         login(terminalId)
         consultar_agente_prepago(terminalId)
 
@@ -124,5 +124,5 @@ def index():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
-    # app.run(host='0.0.0.0', port=6789, debug=True)
+    # app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=6789, debug=True)
