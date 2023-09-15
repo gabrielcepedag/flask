@@ -134,7 +134,7 @@
                     .catch(error => {
                         message = `Error de Gabriel: ${error}`
                         message.innerHTML = 'MESSAGE FROM LOTENET: '+error;
-                        console.error('Error FETCH: ',e);
+                        console.error('Error FETCH: ',message);
                     }).finally(() => {
                         depositButton.disabled = false;
                     });

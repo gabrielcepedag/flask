@@ -94,7 +94,7 @@ def consultar_agente_prepago(terminalId):
 
 def login(terminalId):
     global TOKEN
-    username = "c08f8fca@orkapi_demo"
+    username = "6271013b@carlos_prueba"
     password = "123456"
     data = { 
         "usuario" : 
